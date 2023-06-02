@@ -1,6 +1,9 @@
 import psycopg2
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timedelta
+
+
 
 # Load the environment variables from .env file
 load_dotenv()
@@ -35,6 +38,7 @@ class PersonDatabase:
         self.connection.commit()
     
     def insert_data(self, first_name, last_name, age):
+        start_time=datetime.utcnow()
         # Insert data
         insert_query = """
         INSERT INTO person (id, first_name, last_name, age)
@@ -43,15 +47,21 @@ class PersonDatabase:
         values = (first_name, last_name, age)
         self.cursor.execute(insert_query, values)
         self.connection.commit()
+        end_time=datetime.utcnow()
+        print(f"Total time taken to run insert_data function : {str(end_time - start_time)}")
     
     def select_all_data(self):
+        start_time=datetime.utcnow()
         # Select all data
         self.cursor.execute("SELECT * from person")
         rows = self.cursor.fetchall()
         for row in rows:
             print(row)
+        end_time=datetime.utcnow()
+        print(f"Total time taken to run select_all_data function : {str(end_time - start_time)}")
     
     def update_data(self, first_name, new_age):
+        start_time=datetime.utcnow()
         # Update data
         update_query = """
         UPDATE person
@@ -61,13 +71,18 @@ class PersonDatabase:
         values = (new_age, first_name)
         self.cursor.execute(update_query, values)
         self.connection.commit()
+        end_time=datetime.utcnow()
     
     def delete_all_data(self):
+        start_time=datetime.utcnow()
         # Delete all data
         self.cursor.execute("DELETE FROM person")
         self.connection.commit()
+        end_time=datetime.utcnow()
+        print(f"Total time taken to run delete_all_data function : {str(end_time - start_time)}")
         
     def delete_data(self, first_name):
+        start_time=datetime.utcnow()
         # Delete data
         delete_query = """
         DELETE FROM person
@@ -76,6 +91,8 @@ class PersonDatabase:
         values = (first_name,)
         self.cursor.execute(delete_query, values)
         self.connection.commit()
+        end_time=datetime.utcnow()
+        print(f"Total time taken to run delete_data function : {str(end_time - start_time)}")
     
     def close_connection(self):
         self.cursor.close()
@@ -85,6 +102,7 @@ class PersonDatabase:
 # Code that will only be executed when the script is run directly
 # This code will not run if the script is imported as a module
 if __name__ == "__main__":
+    start_time=datetime.utcnow()
     db = PersonDatabase()
     db.create_table()
     db.insert_data("hi", "dumb", 10)
@@ -95,3 +113,5 @@ if __name__ == "__main__":
     db.delete_data("hi")
     db.select_all_data()
     db.close_connection()
+    end_time=datetime.utcnow()
+    print(f"Total time taken to run whole script : {str(end_time - start_time)}")
