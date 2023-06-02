@@ -82,14 +82,16 @@ class PersonDatabase:
         self.connection.close()
 
 
-# Usage example
-db = PersonDatabase()
-db.create_table()
-db.insert_data("hi", "dumb", 10)
-db.select_all_data()
-db.update_data("hi", 35)
-db.select_all_data()
-# db.delete_all_data()
-db.delete_data("hi")
-db.select_all_data()
-db.close_connection()
+# Code that will only be executed when the script is run directly
+# This code will not run if the script is imported as a module
+if __name__ == "__main__":
+    db = PersonDatabase()
+    db.create_table()
+    db.insert_data("hi", "dumb", 10)
+    db.select_all_data()
+    db.update_data("hi", 35)
+    db.select_all_data()
+    # db.delete_all_data()
+    db.delete_data("hi")
+    db.select_all_data()
+    db.close_connection()
