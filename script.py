@@ -114,6 +114,42 @@ class PersonDatabase:
         self.connection.commit()
         end_time=datetime.utcnow()
         print(f"Total time taken to run delete_data function : {str(end_time - start_time)}")
+        
+    def insert_into_another_table(self):
+        
+        # check if table exists
+        self.cursor.execute("""
+                            SELECT EXISTS (
+                                SELECT 1
+                                FROM information_schema.tables
+                                WHERE table_name = 'person_copy'
+                            )
+                            """
+                            )
+        table_exists = self.cursor.fetchone()[0]    
+        if not table_exists:
+            self.cursor.execute("""
+                                CREATE TABLE person_copy(
+                                    id INT PRIMARY KEY,
+                                    first_name VARCHAR(23),
+                                    last_name VARCHAR(23),
+                                    age INTEGER
+                                )
+                                """
+                                )
+            self.connection.commit()
+            
+        
+        # Insert data into another table
+        insert_query = """
+        INSERT INTO person_copy (id, first_name, last_name, age)
+        SELECT id, first_name, last_name, age
+        FROM person
+        """
+        self.cursor.execute(insert_query)
+        self.connection.commit()
+        
+    
     
     def close_connection(self):
         self.cursor.close()
@@ -126,7 +162,8 @@ if __name__ == "__main__":
     start_time=datetime.utcnow()
     db = PersonDatabase()
     # db.create_table()
-    db.insert_dummy_data(1000000)
+    # db.insert_dummy_data(100)
+    # db.insert_dummy_data(1000000)
     # db.insert_data("hi", "dumb", 10)
     # db.select_all_data()
     # db.update_data("hi", 35)
@@ -134,6 +171,7 @@ if __name__ == "__main__":
     # # db.delete_all_data()
     # db.delete_data("hi")
     # db.select_all_data()
+    db.insert_into_another_table()
     db.close_connection()
     end_time=datetime.utcnow()
     print(f"Total time taken to run whole script : {str(end_time - start_time)}")
