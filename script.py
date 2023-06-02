@@ -1,9 +1,9 @@
 import psycopg2
 from dotenv import load_dotenv
 import os
-from datetime import datetime, timedelta
-
-
+from datetime import datetime
+from faker import Faker
+import random
 
 # Load the environment variables from .env file
 load_dotenv()
@@ -36,6 +36,27 @@ class PersonDatabase:
         )
         """)
         self.connection.commit()
+        
+    def insert_dummy_data(self, n_records=1000):
+        fake = Faker()
+        start_time = datetime.utcnow()
+        records = []
+
+        for _ in range(n_records):
+            first_name = fake.first_name()
+            last_name = fake.last_name()
+            age = random.randint(18, 65)
+            records.append((first_name, last_name, age))
+
+        insert_query = """
+        INSERT INTO person (first_name, last_name, age)
+        VALUES (%s, %s, %s)
+        """
+        self.cursor.executemany(insert_query, records)
+        self.connection.commit()
+        
+        end_time = datetime.utcnow()
+        print(f"Total time taken to insert {n_records} dummy records: {str(end_time - start_time)}") 
     
     def insert_data(self, first_name, last_name, age):
         start_time=datetime.utcnow()
@@ -104,14 +125,16 @@ class PersonDatabase:
 if __name__ == "__main__":
     start_time=datetime.utcnow()
     db = PersonDatabase()
-    db.create_table()
-    db.insert_data("hi", "dumb", 10)
-    db.select_all_data()
-    db.update_data("hi", 35)
-    db.select_all_data()
-    # db.delete_all_data()
-    db.delete_data("hi")
-    db.select_all_data()
+    # db.create_table()
+    db.insert_dummy_data(1000000)
+    # db.insert_data("hi", "dumb", 10)
+    # db.select_all_data()
+    # db.update_data("hi", 35)
+    # db.select_all_data()
+    # # db.delete_all_data()
+    # db.delete_data("hi")
+    # db.select_all_data()
     db.close_connection()
     end_time=datetime.utcnow()
     print(f"Total time taken to run whole script : {str(end_time - start_time)}")
+    
